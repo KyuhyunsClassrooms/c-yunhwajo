@@ -1,36 +1,78 @@
 #include <stdio.h>
+#include <stdbool.h>
 
-/*
-    1. [설계]에서 정의한 변수, 배열, (필요하면) 구조체를 여기에 선언하세요.
-    
-    예시 - 배열 사용:
-    char names[100][20];
-    int scores[100];
-    int count = 0;
-    
-    예시 - 구조체 사용 (선택):
-    struct Student {
-        char name[20];
-        int score;
-    };
-    struct Student students[100];
-*/
+void clearBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
+struct CircuitInput {
+    bool A;
+    bool B;
+    bool C;
+};
 
-/*
-    2. [알고리즘]에서 설계한 핵심 기능 함수들을 여기에 선언하세요.
-*/
+struct CircuitOutput {
+    bool X;
+    bool Y;
+};
 
+struct CircuitInput getValidInput() {
+    struct CircuitInput input;
+    int a, b, c;
+
+    while (1) {
+        printf("A, B, C 입력 (0 또는 1): ");
+        scanf("%d %d %d", &a, &b, &c);
+
+        if ((a == 0 || a == 1) &&
+            (b == 0 || b == 1) &&
+            (c == 0 || c == 1)) {
+
+            input.A = a;
+            input.B = b;
+            input.C = c;
+            clearBuffer();
+            return input;
+        }
+
+        printf("잘못된 입력입니다. A, B, C는 0 또는 1이어야 합니다.\n");
+        clearBuffer();
+    }
+}
+
+struct CircuitOutput compute(struct CircuitInput in) {
+    struct CircuitOutput out;
+
+    bool X1 = in.A && in.B;
+    bool X2 = (!in.B) && in.C;
+    out.X = X1 || X2;
+
+    bool Y1 = in.A || in.C;
+    out.Y = Y1 && (!in.B);
+
+    return out;
+}
+
+void printOutput(struct CircuitOutput out) {
+    printf("X = %d\n", out.X);
+    printf("Y = %d\n", out.Y);
+}
 
 int main() {
-    
-    printf("--- C언어 미니 프로젝트 시작! ---\n");
+    char choice;
 
-    /*
-        3. [알고리즘]에서 설계한 main 함수의 흐름을
-           여기에 C언어로 자유롭게 구현하세요.
-    */
-    
-    
+    do {
+        struct CircuitInput input = getValidInput();
+        struct CircuitOutput output = compute(input);
+        printOutput(output);
+
+        printf("다시 실행할까요? (y/n): ");
+        scanf(" %c", &choice);
+        clearBuffer();
+
+    } while (choice == 'y' || choice == 'Y');
+
     return 0;
 }
+
